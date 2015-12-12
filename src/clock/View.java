@@ -11,11 +11,12 @@ import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
 
-public class View implements Observer, ActionListener, ItemListener {
+public class View implements Observer, ActionListener {
 
     ClockPanel panel;
     JMenuBar menuBar;
-    JMenu addMenu, saveMenu;
+    JMenu alarmOptions;
+    JMenuItem addAlarm, saveAlarm;
     Container pane;
 
     public View(Model model) {
@@ -37,12 +38,14 @@ public class View implements Observer, ActionListener, ItemListener {
         JButton button;
 
         menuBar = new JMenuBar();
-        addMenu = new JMenu("Add Alarm");
-        saveMenu = new JMenu("Save Alarms");
-        menuBar.add(addMenu);
-        menuBar.add(saveMenu);
-        addMenu.addItemListener(this);
-        saveMenu.addItemListener(this);
+        alarmOptions = new JMenu("Alarm Options");
+        addAlarm = new JMenuItem("Add new Alarm");
+        saveAlarm = new JMenuItem("Save Current Alarms");
+        menuBar.add(alarmOptions);
+        alarmOptions.add(addAlarm);
+        alarmOptions.add(saveAlarm);
+        addAlarm.addActionListener(this);
+        saveAlarm.addActionListener(this);
 
         pane.add(menuBar, BorderLayout.PAGE_START);
 
@@ -69,26 +72,22 @@ public class View implements Observer, ActionListener, ItemListener {
     }
 
     @Override
-    public void itemStateChanged(ItemEvent e) {
-        if (e.getSource() == addMenu && e.getStateChange() == 1) {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == addAlarm) {
             Date date = new Date();
             SpinnerDateModel sdm = new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY);
             JSpinner spinner = new JSpinner(sdm);
-            JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, "hh:mm");
+            JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, "HH:mm");
             spinner.setEditor(dateEditor);
             int option = JOptionPane.showOptionDialog(pane, spinner, "Please select a time for the alarm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (option == JOptionPane.OK_OPTION) {
+                String alarmTime = dateEditor.getFormat().format(spinner.getValue());
 
             } else {
 
             }
-        } else if (e.getSource() == saveMenu) {
+        } else if (e.getSource() == saveAlarm) {
             //TO DO CODE FOR SAVING
         }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
