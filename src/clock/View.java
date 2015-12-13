@@ -97,8 +97,7 @@ public class View implements Observer, ActionListener {
 
             }
         } else if (e.getSource() == saveAlarm) {
-            //TO DO CODE FOR SAVING
-
+           
         }
     }
 }
