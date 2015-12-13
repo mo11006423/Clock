@@ -3,13 +3,15 @@ package clock;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class View implements Observer, ActionListener {
 
@@ -73,6 +75,7 @@ public class View implements Observer, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        AlarmHandler alarmHandler = new AlarmHandler();
         if (e.getSource() == addAlarm) {
             Date date = new Date();
             SpinnerDateModel sdm = new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY);
@@ -82,12 +85,20 @@ public class View implements Observer, ActionListener {
             int option = JOptionPane.showOptionDialog(pane, spinner, "Please select a time for the alarm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (option == JOptionPane.OK_OPTION) {
                 String alarmTime = dateEditor.getFormat().format(spinner.getValue());
+                try {
+                    alarmHandler.saveAlarm(alarmTime);
+                } catch (IOException ex) {
+                    Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ParseException ex) {
+                    Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             } else {
 
             }
         } else if (e.getSource() == saveAlarm) {
             //TO DO CODE FOR SAVING
+
         }
     }
 }
