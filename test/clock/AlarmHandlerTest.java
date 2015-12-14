@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  * @author Jamie Simpson
  */
 public class AlarmHandlerTest {
-    
+
     public AlarmHandlerTest() {
     }
 
@@ -37,7 +37,7 @@ public class AlarmHandlerTest {
     @Test
     public void testTestTimes() throws Exception {
         AlarmHandler ah = new AlarmHandler();
-        ah.testTimes();
+        System.out.println(ah.getAlarms().head());
     }
-    
+
 }
