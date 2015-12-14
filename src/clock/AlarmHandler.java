@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import org.apache.commons.lang3.ArrayUtils;
 import queuemanager.QueueOverflowException;
@@ -68,7 +69,7 @@ public class AlarmHandler {
 
     }
 
-    public void readAlarm() throws IOException, QueueOverflowException {
+    public SortedArrayPriorityQueue getAlarms() throws IOException, QueueOverflowException {
         ICalendar ical = Biweekly.parse(file).first();
         SortedArrayPriorityQueue sorted = new SortedArrayPriorityQueue(ical.getEvents().size());
         Calendar calendar = Calendar.getInstance();
@@ -81,7 +82,7 @@ public class AlarmHandler {
         }
 
         Arrays.sort(times);
-        ArrayUtils.reverse(times);
+        //  ArrayUtils.reverse(times);
         Date dateForOrder = new Date();
         int priority = ical.getEvents().size();
         for (int i = 0; i < times.length; i++) {
@@ -89,9 +90,28 @@ public class AlarmHandler {
             calendar.setTime(dateForOrder);
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             sorted.add(sdf.format(calendar.getTime()), priority);
+            System.out.println(sorted.toString());
+            priority--;
         }
+        return sorted;
+    }
 
-       System.out.println(sorted.toString());
+    public void testTimes() throws IOException {
+        ICalendar ical = Biweekly.parse(file).first();
+        Date today = new Date();
+        Date date;
+        long currentTime = today.getTime();
+        HashMap<Long, Long> map = new HashMap<>();
+        //Add the alarms to a linked list
+        for (int i = 0; i < ical.getEvents().size(); i++) {
+            date = ical.getEvents().get(i).getDateStart().getValue();
+            long key = date.getTime() - currentTime;
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        //    map.put(key, sdf.format(cal.getTime()));
+           System.out.println(sdf.format(cal.getTime()));
+        }
 
     }
 

@@ -12,6 +12,7 @@ import java.util.Observer;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import queuemanager.QueueOverflowException;
 
 public class View implements Observer, ActionListener {
 
@@ -98,10 +99,13 @@ public class View implements Observer, ActionListener {
             }
         } else if (e.getSource() == saveAlarm) {
             try {
-                alarmHandler.readAlarm();
+                alarmHandler.getAlarms();
             } catch (IOException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (QueueOverflowException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }
     }
 }
