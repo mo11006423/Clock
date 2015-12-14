@@ -37,7 +37,9 @@ public class AlarmHandlerTest {
     @Test
     public void testTestTimes() throws Exception {
         AlarmHandler ah = new AlarmHandler();
-        System.out.println(ah.getAlarms().head());
+        ah.alarmTime();
+       
+       
     }
 
 }

@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import queuemanager.QueueOverflowException;
+import queuemanager.QueueUnderflowException;
 import queuemanager.SortedArrayPriorityQueue;
 
 /**
@@ -30,7 +31,7 @@ public class AlarmHandler {
 
     private File file = new File("C:\\Users\\Jamie Simpson\\Desktop\\Alarms.ics");
 
-    public void saveAlarm(String alarmTime) throws IOException, ParseException {
+    public void saveAlarm(String alarmTime) throws IOException, ParseException, QueueOverflowException {
 
         String hour = alarmTime.charAt(0) + "" + alarmTime.charAt(1);
         String minutes = alarmTime.charAt(3) + "" + alarmTime.charAt(4);
@@ -62,7 +63,6 @@ public class AlarmHandler {
             event.setDateStart(new DateStart(start, true));
             ical.addEvent(event);
             Biweekly.write(ical).go(file);
-
         }
 
     }
@@ -88,9 +88,9 @@ public class AlarmHandler {
                 currentAlarmMap.put(key, sdf.format(cal.getTime()));
             }
         }
-        String[] currentAlarms = new String[currentAlarmMap.size()];
+        String[] currentAlarms;
         currentAlarms = currentAlarmMap.values().toArray(new String[0]);
-        String[] pastAlarms = new String[pastAlarmsMap.size()];
+        String[] pastAlarms;
         pastAlarms = pastAlarmsMap.values().toArray(new String[0]);
         int priority = ical.getEvents().size();
 
@@ -104,6 +104,23 @@ public class AlarmHandler {
         }
 
         return sorted;
+    }
+
+    public void alarmTime() throws IOException, QueueOverflowException, QueueUnderflowException {
+        Calendar calendar = Calendar.getInstance();
+        ICalendar ical = Biweekly.parse(file).first();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+        for (VEvent event : ical.getEvents()) {
+            if (sdf.format(event.getDateStart().getValue()).equals(getAlarms().head().toString())) {
+                System.out.println("This event");
+                event.removeComponents(VEvent.class);
+                ical.getEvents().remove(event);
+                break;
+            }
+
+        }
+
     }
 
 }

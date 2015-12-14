@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
@@ -13,6 +14,7 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import queuemanager.QueueOverflowException;
+import queuemanager.QueueUnderflowException;
 
 public class View implements Observer, ActionListener {
 
@@ -21,6 +23,7 @@ public class View implements Observer, ActionListener {
     JMenu alarmOptions;
     JMenuItem addAlarm, saveAlarm;
     Container pane;
+    AlarmHandler ah = new AlarmHandler();
 
     public View(Model model) {
         JFrame frame = new JFrame();
@@ -71,6 +74,23 @@ public class View implements Observer, ActionListener {
 
     public void update(Observable o, Object arg) {
         panel.repaint();
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String currentTime = sdf.format(calendar.getTime());
+
+        try {
+            if (currentTime.compareTo(ah.getAlarms().head().toString()) == 1 || currentTime.compareTo(ah.getAlarms().head().toString()) == 0) {
+                System.out.println("The head:" + ah.getAlarms().head());
+                JOptionPane.showMessageDialog(panel, "Your alarm is going off");
+
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (QueueOverflowException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (QueueUnderflowException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
@@ -91,6 +111,8 @@ public class View implements Observer, ActionListener {
                 } catch (IOException ex) {
                     Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ParseException ex) {
+                    Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (QueueOverflowException ex) {
                     Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
