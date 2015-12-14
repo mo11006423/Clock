@@ -10,13 +10,16 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
 import biweekly.property.DateStart;
+import biweekly.property.DateTimeStamp;
+import biweekly.property.Uid;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import queuemanager.QueueOverflowException;
@@ -110,16 +113,20 @@ public class AlarmHandler {
         Calendar calendar = Calendar.getInstance();
         ICalendar ical = Biweekly.parse(file).first();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        List<VEvent> events = new LinkedList<>();
 
         for (VEvent event : ical.getEvents()) {
-            if (sdf.format(event.getDateStart().getValue()).equals(getAlarms().head().toString())) {
-                System.out.println("This event");
-                event.removeComponents(VEvent.class);
-                ical.getEvents().remove(event);
-                break;
+            if (!sdf.format(event.getDateStart().getValue()).equals(getAlarms().head().toString())) {
+                events.add(event);
             }
-
         }
+        System.out.println(events.size());
+        ical.removeComponents(VEvent.class);
+        for (VEvent event : events) {
+            ical.addEvent(event);
+        }
+        Biweekly.write(ical).go(file);
+        getAlarms();
 
     }
 
