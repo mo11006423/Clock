@@ -77,21 +77,27 @@ public class View implements Observer, ActionListener {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         String currentTime = sdf.format(calendar.getTime());
-
         try {
-            if (currentTime.compareTo(ah.getAlarms().head().toString()) == 1 || currentTime.compareTo(ah.getAlarms().head().toString()) == 0) {
-                System.out.println("The head:" + ah.getAlarms().head());
-                JOptionPane.showMessageDialog(panel, "Your alarm is going off");
-
+            if (!ah.getAlarms().isEmpty()) {
+                try {
+                    if (currentTime.compareTo(ah.getAlarms().head().toString()) == 1 || currentTime.compareTo(ah.getAlarms().head().toString()) == 0) {
+                        System.out.println("The head:" + ah.getAlarms().head());
+                        JOptionPane.showMessageDialog(panel, "Your alarm is going off");
+                        ah.RemoveAlarm();
+                    }
+                } catch (IOException ex) {
+                   
+                } catch (QueueOverflowException ex) {
+                    JOptionPane.showMessageDialog(panel, "The queue was not dynamically expanded for some reason");
+                } catch (QueueUnderflowException ex) {
+                    JOptionPane.showMessageDialog(panel, "The queue had no values");
+                }
             }
         } catch (IOException ex) {
-            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+           // JOptionPane.showMessageDialog(panel, "An expected IO exception occured when reading times");
         } catch (QueueOverflowException ex) {
-            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (QueueUnderflowException ex) {
-            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(panel, "The queue was not dynamically expanded for some reason");
         }
-
     }
 
     @Override

@@ -10,8 +10,6 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
 import biweekly.property.DateStart;
-import biweekly.property.DateTimeStamp;
-import biweekly.property.Uid;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -109,12 +107,10 @@ public class AlarmHandler {
         return sorted;
     }
 
-    public void alarmTime() throws IOException, QueueOverflowException, QueueUnderflowException {
-        Calendar calendar = Calendar.getInstance();
+    public void RemoveAlarm() throws IOException, QueueOverflowException, QueueUnderflowException {
         ICalendar ical = Biweekly.parse(file).first();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         List<VEvent> events = new LinkedList<>();
-
         for (VEvent event : ical.getEvents()) {
             if (!sdf.format(event.getDateStart().getValue()).equals(getAlarms().head().toString())) {
                 events.add(event);

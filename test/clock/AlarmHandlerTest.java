@@ -39,7 +39,7 @@ public class AlarmHandlerTest {
         AlarmHandler ah = new AlarmHandler();
 
         System.out.println(ah.getAlarms().toString());
-        ah.alarmTime();
+        ah.RemoveAlarm();
       //  System.out.println(ah.getAlarms().head());
 
     }
