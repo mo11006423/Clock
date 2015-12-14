@@ -97,7 +97,11 @@ public class View implements Observer, ActionListener {
 
             }
         } else if (e.getSource() == saveAlarm) {
-           
+            try {
+                alarmHandler.readAlarm();
+            } catch (IOException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

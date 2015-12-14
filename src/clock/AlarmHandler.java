@@ -15,8 +15,13 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import org.apache.commons.lang3.ArrayUtils;
+import queuemanager.QueueOverflowException;
+import queuemanager.SortedArrayPriorityQueue;
 
 /**
  *
@@ -63,9 +68,30 @@ public class AlarmHandler {
 
     }
 
-    public void readAlarm() throws IOException {
+    public void readAlarm() throws IOException, QueueOverflowException {
         ICalendar ical = Biweekly.parse(file).first();
-        System.out.println(ical.getEvents().size());
+        SortedArrayPriorityQueue sorted = new SortedArrayPriorityQueue(ical.getEvents().size());
+        Calendar calendar = Calendar.getInstance();
+        Date date;
+        long[] times = new long[ical.getEvents().size()];
+        //Add the alarms to a linked list
+        for (int i = 0; i < ical.getEvents().size(); i++) {
+            date = ical.getEvents().get(i).getDateStart().getValue();
+            times[i] = date.getTime();
+        }
+
+        Arrays.sort(times);
+        ArrayUtils.reverse(times);
+        Date dateForOrder = new Date();
+        int priority = ical.getEvents().size();
+        for (int i = 0; i < times.length; i++) {
+            dateForOrder.setTime(times[i]);
+            calendar.setTime(dateForOrder);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            sorted.add(sdf.format(calendar.getTime()), priority);
+        }
+
+       System.out.println(sorted.toString());
 
     }
 
