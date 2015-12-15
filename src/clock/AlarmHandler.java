@@ -125,5 +125,20 @@ public class AlarmHandler {
         getAlarms();
 
     }
+    
+    public String getStringAlarms() throws IOException, QueueOverflowException, QueueUnderflowException{
+        ICalendar ical = Biweekly.parse(file).first();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        List<String> times = new LinkedList<>();
+       String rtnVal = "";
+        for (VEvent event : ical.getEvents()) {
+           times.add(sdf.format(event.getDateStart().getValue())); 
+                          
+        }
+        for(String time : times){
+            rtnVal = " "+ rtnVal + "\n" + time;
+        }
+        return rtnVal;
+    }
 
 }

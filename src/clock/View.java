@@ -13,6 +13,7 @@ import java.util.Observer;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.border.EmptyBorder;
 import queuemanager.QueueOverflowException;
 import queuemanager.QueueUnderflowException;
 
@@ -24,6 +25,7 @@ public class View implements Observer, ActionListener {
     JMenuItem addAlarm, saveAlarm;
     Container pane;
     AlarmHandler ah = new AlarmHandler();
+    JButton btnEdit, btnView;
 
     public View(Model model) {
         JFrame frame = new JFrame();
@@ -55,17 +57,23 @@ public class View implements Observer, ActionListener {
 
         pane.add(menuBar, BorderLayout.PAGE_START);
 
-        panel.setPreferredSize(new Dimension(200, 200));
+        panel.setPreferredSize(new Dimension(300, 300));
         pane.add(panel, BorderLayout.CENTER);
 
-        button = new JButton("Button 3 (LINE_START)");
-        pane.add(button, BorderLayout.LINE_START);
+        // pane.add(button, BorderLayout.LINE_START);
+        // pane.add(button, BorderLayout.PAGE_END);
+        JPanel rightPanel = new JPanel();
 
-        button = new JButton("Long-Named Button 4 (PAGE_END)");
-        pane.add(button, BorderLayout.PAGE_END);
-
-        button = new JButton("5 (LINE_END)");
-        pane.add(button, BorderLayout.LINE_END);
+        pane.add(rightPanel, BorderLayout.LINE_END);
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        btnView = new JButton("View Alarms");
+        btnView.addActionListener(this);
+        rightPanel.add(btnView);
+        Dimension D = btnView.getMaximumSize();
+        btnEdit = new JButton("Edit Alarms");
+        btnEdit.addActionListener(this);
+        btnEdit.setMaximumSize(D);
+        rightPanel.add(btnEdit);
 
         // End of borderlayout code
         frame.pack();
@@ -86,7 +94,7 @@ public class View implements Observer, ActionListener {
                         ah.RemoveAlarm();
                     }
                 } catch (IOException ex) {
-                   
+
                 } catch (QueueOverflowException ex) {
                     JOptionPane.showMessageDialog(panel, "The queue was not dynamically expanded for some reason");
                 } catch (QueueUnderflowException ex) {
@@ -94,7 +102,7 @@ public class View implements Observer, ActionListener {
                 }
             }
         } catch (IOException ex) {
-           // JOptionPane.showMessageDialog(panel, "An expected IO exception occured when reading times");
+            // JOptionPane.showMessageDialog(panel, "An expected IO exception occured when reading times");
         } catch (QueueOverflowException ex) {
             JOptionPane.showMessageDialog(panel, "The queue was not dynamically expanded for some reason");
         }
@@ -134,6 +142,18 @@ public class View implements Observer, ActionListener {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+        } else if (e.getSource() == btnEdit) {
+            
+        } else if(e.getSource() == btnView){
+            try {
+                JOptionPane.showMessageDialog(panel, ah.getStringAlarms());
+            } catch (IOException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (QueueOverflowException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (QueueUnderflowException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }
