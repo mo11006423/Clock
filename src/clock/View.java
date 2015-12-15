@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
@@ -26,6 +27,8 @@ public class View implements Observer, ActionListener {
     Container pane;
     AlarmHandler ah = new AlarmHandler();
     JButton btnEdit, btnView;
+    JOptionPane testPane = new JOptionPane();
+    JFrame testFrame = new JFrame();
 
     public View(Model model) throws IOException, QueueOverflowException, QueueUnderflowException {
         JFrame frame = new JFrame();
@@ -144,10 +147,19 @@ public class View implements Observer, ActionListener {
             }
 
         } else if (e.getSource() == btnEdit) {
-            JTextField alarm = new JTextField();
-            for (int i = 0; i < ah.getListAlarms().size(); i++) {
+            JTextField alarm;
 
+            for (int i = 0; i < ah.getListAlarms().size(); i++) {
+                alarm = new JTextField();
+                alarm.setText(ah.getListAlarms().get(i));
+
+                testPane.add(alarm);
             }
+            testFrame.add(testPane, BorderLayout.CENTER);
+            testFrame.setSize(300, 300);
+            testFrame.setVisible(true);
+            testFrame.setTitle("Edit Alarms");
+            testFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
         } else if (e.getSource() == btnView) {
             try {
