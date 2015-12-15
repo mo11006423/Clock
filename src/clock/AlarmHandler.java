@@ -16,10 +16,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import queuemanager.QueueOverflowException;
 import queuemanager.QueueUnderflowException;
 import queuemanager.SortedArrayPriorityQueue;
@@ -125,20 +128,34 @@ public class AlarmHandler {
         getAlarms();
 
     }
-    
-    public String getStringAlarms() throws IOException, QueueOverflowException, QueueUnderflowException{
+
+    public String getStringAlarms() throws IOException, QueueOverflowException, QueueUnderflowException {
         ICalendar ical = Biweekly.parse(file).first();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         List<String> times = new LinkedList<>();
-       String rtnVal = "";
+        String rtnVal = "";
         for (VEvent event : ical.getEvents()) {
-           times.add(sdf.format(event.getDateStart().getValue())); 
-                          
+            times.add(sdf.format(event.getDateStart().getValue()));
         }
-        for(String time : times){
-            rtnVal = " "+ rtnVal + "\n" + time;
+        for (String time : times) {
+            rtnVal = rtnVal + "\n" + time;
         }
         return rtnVal;
+    }
+
+    public LinkedList<String> getListAlarms() {
+        ICalendar ical = null;
+        try {
+            ical = Biweekly.parse(file).first();
+        } catch (IOException ex) {
+            Logger.getLogger(AlarmHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        LinkedList<String> times = new LinkedList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        for (VEvent event : ical.getEvents()) {
+            times.add(sdf.format(event.getDateStart().getValue()));
+        }
+        return times;
     }
 
 }

@@ -27,7 +27,7 @@ public class View implements Observer, ActionListener {
     AlarmHandler ah = new AlarmHandler();
     JButton btnEdit, btnView;
 
-    public View(Model model) {
+    public View(Model model) throws IOException, QueueOverflowException, QueueUnderflowException {
         JFrame frame = new JFrame();
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
@@ -74,6 +74,7 @@ public class View implements Observer, ActionListener {
         btnEdit.addActionListener(this);
         btnEdit.setMaximumSize(D);
         rightPanel.add(btnEdit);
+        menuBar.add(new JLabel("Next Alarm: " + ah.getAlarms().head().toString()));
 
         // End of borderlayout code
         frame.pack();
@@ -143,10 +144,15 @@ public class View implements Observer, ActionListener {
             }
 
         } else if (e.getSource() == btnEdit) {
-            
-        } else if(e.getSource() == btnView){
+            JTextField alarm = new JTextField();
+            for (int i = 0; i < ah.getListAlarms().size(); i++) {
+
+            }
+
+        } else if (e.getSource() == btnView) {
             try {
-                JOptionPane.showMessageDialog(panel, ah.getStringAlarms());
+                JOptionPane.showMessageDialog(panel, ah.getStringAlarms(), "Below are a list of alarm times", JOptionPane.INFORMATION_MESSAGE);
+
             } catch (IOException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             } catch (QueueOverflowException ex) {
