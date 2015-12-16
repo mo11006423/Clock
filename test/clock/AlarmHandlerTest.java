@@ -18,10 +18,13 @@ public class AlarmHandlerTest {
     }
 
     /**
-     * Test of saveAlarm method, of class AlarmHandler.
+     * Test of setDate method, of class AlarmHandler.
      */
     @Test
-    public void testSaveAlarm() throws Exception {
+    public void testSetDate() {
+        String time = "13:33";
+        AlarmHandler ah = new AlarmHandler();
+        System.out.println(ah.setDate(time));
     }
 
     /**
@@ -32,16 +35,24 @@ public class AlarmHandlerTest {
     }
 
     /**
-     * Test of testTimes method, of class AlarmHandler.
+     * Test of RemoveAlarm method, of class AlarmHandler.
      */
     @Test
-    public void testTestTimes() throws Exception {
-        AlarmHandler ah = new AlarmHandler();
+    public void testRemoveAlarm() throws Exception {
+    }
 
-        System.out.println(ah.getAlarms().toString());
-        ah.RemoveAlarm();
-      //  System.out.println(ah.getAlarms().head());
+    /**
+     * Test of getStringAlarms method, of class AlarmHandler.
+     */
+    @Test
+    public void testGetStringAlarms() throws Exception {
+    }
 
+    /**
+     * Test of getListAlarms method, of class AlarmHandler.
+     */
+    @Test
+    public void testGetListAlarms() {
     }
 
 }

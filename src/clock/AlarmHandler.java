@@ -6,6 +6,8 @@
 package clock;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import queuemanager.QueueOverflowException;
 import queuemanager.QueueUnderflowException;
@@ -17,23 +19,23 @@ import queuemanager.SortedArrayPriorityQueue;
  */
 public class AlarmHandler {
 
-    public void saveAlarm(String alarmTime)  {
+    public Date setDate(String alarmTime) {
+        String hour = alarmTime.charAt(0) + "" + alarmTime.charAt(1);
+        String minutes = alarmTime.charAt(3) + "" + alarmTime.charAt(4);
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(minutes));
+        calendar.set(Calendar.SECOND, 00);
+        Date start = calendar.getTime();
+
+        return start;
 
     }
 
-    public SortedArrayPriorityQueue getAlarms() throws IOException, QueueOverflowException {
-        return null;
-    }
-
-    public void RemoveAlarm() throws IOException, QueueOverflowException, QueueUnderflowException {
-
-    }
-
-    public String getStringAlarms() throws IOException, QueueOverflowException, QueueUnderflowException {
-        return "";
-    }
-
-    public LinkedList<String> getListAlarms() {
+    public SortedArrayPriorityQueue setAlarms()  {
+        
         return null;
     }
 
