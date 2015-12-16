@@ -54,9 +54,11 @@ public class AlarmHandler {
 
         dateFormat.format(today);
         for (Date event : events) {
-            dateFormat.format(event);
+            //dateFormat.format(event);
             if (!event.before(today)) {
                 currentEvents.add(event);
+            } else {
+                ical.deleteEvent(event);
             }
         }
         //  System.out.println(currentEvents);

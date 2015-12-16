@@ -5,6 +5,8 @@
  */
 package clock;
 
+import Jical.components.Ical;
+import java.util.Date;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,6 +37,9 @@ public class AlarmHandlerTest {
     @Test
     public void testSetAlarms() throws Exception {
         System.out.println(ah.setAlarms("19:43"));
+        Ical ical = new Ical();
+       // ical.deleteEvent();
+        
     }
 
     /**
