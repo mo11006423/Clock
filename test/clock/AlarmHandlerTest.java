@@ -19,6 +19,7 @@ public class AlarmHandlerTest {
     AlarmHandler ah = new AlarmHandler();
 
     public AlarmHandlerTest() {
+
     }
 
     /**
@@ -28,7 +29,7 @@ public class AlarmHandlerTest {
     public void testSetDate() {
         String time = "13:33";
 
-        System.out.println(ah.setDate(time));
+        //   System.out.println(ah.setDate(time));
     }
 
     /**
@@ -36,9 +37,13 @@ public class AlarmHandlerTest {
      */
     @Test
     public void testSetAlarms() throws Exception {
-        System.out.println(ah.setAlarms("19:43"));
-        //  System.out.println(ah.setAlarms("20:43"));
-          ah.saveAlarms();
+        ah.setAlarms("16:55");
+        System.out.println(ah.getAlarms());
+        //System.out.println(ah.setAlarms("20:43"));
+        ah.saveAlarms();
+        System.out.println(ah.getAlarms());
+        System.out.println(ah.getAlarms());
+        ah.alarmTime();
 
     }
 

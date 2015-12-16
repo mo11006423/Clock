@@ -3,19 +3,13 @@ package clock;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.border.EmptyBorder;
-import queuemanager.QueueOverflowException;
 import queuemanager.QueueUnderflowException;
 
 public class View implements Observer, ActionListener {
@@ -86,12 +80,20 @@ public class View implements Observer, ActionListener {
 
     public void update(Observable o, Object arg) {
         panel.repaint();
+        if (ah.alarmTime()) {
+            JOptionPane.showMessageDialog(panel, "Your alarm for " + ah.getNextAlarm() + " is going off");
+            try {
+                ah.getAlarms().remove();
+            } catch (QueueUnderflowException ex) {
+
+            }
+        }
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AlarmHandler alarmHandler = new AlarmHandler();
+
         if (e.getSource() == addAlarm) {
             Date date = new Date();
             SpinnerDateModel sdm = new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY);

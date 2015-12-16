@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import queuemanager.QueueOverflowException;
+import queuemanager.QueueUnderflowException;
 import queuemanager.SortedArrayPriorityQueue;
 
 /**
@@ -25,7 +26,24 @@ import queuemanager.SortedArrayPriorityQueue;
  */
 public class AlarmHandler {
 
+    Ical ical = new Ical();
     private SortedArrayPriorityQueue alarms;
+
+    public AlarmHandler() {
+        this.alarms = new SortedArrayPriorityQueue(1000);
+        try {
+            int priority = ical.getCountEvents();
+            for (int i = 0; i < ical.getCountEvents(); i++) {
+                this.alarms.add(ical.getAllEventDates().get(i), priority);
+            }
+        } catch (IOException ex) {
+            System.out.println("An ioexception");
+        } catch (QueueOverflowException ex) {
+            System.out.println("A Queue overflow exceptions");
+        } catch (ParseException ex) {
+            System.out.println("A parse Exception");
+        }
+    }
 
     public Date setDate(String alarmTime) {
         String hour = alarmTime.charAt(0) + "" + alarmTime.charAt(1);
@@ -42,13 +60,12 @@ public class AlarmHandler {
 
     }
 
-    public SortedArrayPriorityQueue setAlarms(String alarmTime) throws IOException, ParseException {
+    public void setAlarms(String alarmTime) throws IOException, ParseException {
         Date date = setDate(alarmTime);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
         dateFormat.format(date);
         LinkedList<Date> events = new LinkedList<>();
         LinkedList<Date> currentEvents = new LinkedList<>();
-        Ical ical = new Ical();
         events = ical.getAllEventDates();
         events.add(date);
 
@@ -75,16 +92,46 @@ public class AlarmHandler {
             }
             priority--;
         }
-
-        return alarms;
     }
 
     public void saveAlarms() throws IOException, ParseException {
-        Ical ical = new Ical();
         for (int i = 0; i < alarms.size(); i++) {
             ical.addEvent((Date) alarms.toList().get(i));
         }
 
+    }
+
+    public Date getNextAlarm() {
+        try {
+            return (Date) alarms.head();
+        } catch (QueueUnderflowException ex) {
+            Logger.getLogger(AlarmHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public SortedArrayPriorityQueue getAlarms() {
+        return alarms;
+    }
+
+    public boolean alarmTime() {
+        Date today = new Date();
+        Date nextAlarm = null;
+        boolean isTime = false;
+        if (!alarms.isEmpty()) {
+            try {
+                nextAlarm = (Date) alarms.head();
+                System.out.println(today + "\n" + nextAlarm);
+            } catch (QueueUnderflowException ex) {
+
+            }
+            if (today == nextAlarm) {
+                isTime = true;
+            } else if (alarms.isEmpty()) {
+                isTime = false;
+            }
+        }
+        return isTime;
     }
 
 }
