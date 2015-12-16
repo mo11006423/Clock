@@ -37,12 +37,13 @@ public class AlarmHandlerTest {
      */
     @Test
     public void testSetAlarms() throws Exception {
-        ah.setAlarms("16:55");
+        ah.setAlarms("17:09");
+         ah.setAlarms("18:09");
         System.out.println(ah.getAlarms());
         //System.out.println(ah.setAlarms("20:43"));
-        ah.saveAlarms();
-        System.out.println(ah.getAlarms());
-        System.out.println(ah.getAlarms());
+      //  ah.saveAlarms();
+      //  System.out.println(ah.getAlarms());
+      //  System.out.println(ah.getAlarms());
         ah.alarmTime();
 
     }

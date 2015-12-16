@@ -60,25 +60,26 @@ public class AlarmHandler {
 
     }
 
-    public void setAlarms(String alarmTime) throws IOException, ParseException {
+    public void setAlarms(String alarmTime) {
         Date date = setDate(alarmTime);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
         dateFormat.format(date);
-        LinkedList<Date> events = new LinkedList<>();
+        LinkedList<Date> events = alarms.toList();
         LinkedList<Date> currentEvents = new LinkedList<>();
-        events = ical.getAllEventDates();
         events.add(date);
-
         Collections.sort(events);
         Date today = new Date();
-
         dateFormat.format(today);
         for (Date event : events) {
             //dateFormat.format(event);
             if (!event.before(today)) {
                 currentEvents.add(event);
             } else {
-                ical.deleteEvent(event);
+                try {
+                    ical.deleteEvent(event);
+                } catch (IOException ex) {
+                    System.out.println("The old event/alarm could not be deleted");
+                }
             }
         }
         //  System.out.println(currentEvents);
@@ -95,6 +96,11 @@ public class AlarmHandler {
     }
 
     public void saveAlarms() throws IOException, ParseException {
+        for (int i = 0; i < ical.getCountEvents(); i++) {
+            for (Date date : ical.getAllEventDates()) {
+                ical.deleteEvent(date);
+            }
+        }
         for (int i = 0; i < alarms.size(); i++) {
             ical.addEvent((Date) alarms.toList().get(i));
         }
@@ -121,15 +127,14 @@ public class AlarmHandler {
         if (!alarms.isEmpty()) {
             try {
                 nextAlarm = (Date) alarms.head();
-                System.out.println(today + "\n" + nextAlarm);
             } catch (QueueUnderflowException ex) {
 
             }
-            if (today == nextAlarm) {
-                isTime = true;
-            } else if (alarms.isEmpty()) {
-                isTime = false;
-            }
+            DateFormat df = new SimpleDateFormat("HH:mm");
+            String todaysTime = df.format(today);
+            String alarmTime = df.format(nextAlarm);
+            isTime = todaysTime.equals(alarmTime);
+
         }
         return isTime;
     }

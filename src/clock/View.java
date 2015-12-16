@@ -1,15 +1,16 @@
 package clock;
 
+import Jical.components.Ical;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import queuemanager.QueueUnderflowException;
 
 public class View implements Observer, ActionListener {
@@ -23,9 +24,13 @@ public class View implements Observer, ActionListener {
     JButton btnEdit, btnView;
     JOptionPane testPane = new JOptionPane();
     JFrame testFrame = new JFrame();
+    Ical ical = new Ical();
+    JLabel nextAlarm = new JLabel();
+    JFrame frame = new JFrame();
+    boolean runOnce = false;
 
     public View(Model model) {
-        JFrame frame = new JFrame();
+
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
         frame.setTitle("Java Clock");
@@ -40,8 +45,6 @@ public class View implements Observer, ActionListener {
         // positions. This is the very simplest border layout possible, just
         // to help you get started.
         pane = frame.getContentPane();
-        JButton button;
-
         menuBar = new JMenuBar();
         alarmOptions = new JMenu("Alarm Options");
         addAlarm = new JMenuItem("Add new Alarm");
@@ -57,8 +60,6 @@ public class View implements Observer, ActionListener {
         panel.setPreferredSize(new Dimension(300, 300));
         pane.add(panel, BorderLayout.CENTER);
 
-        // pane.add(button, BorderLayout.LINE_START);
-        // pane.add(button, BorderLayout.PAGE_END);
         JPanel rightPanel = new JPanel();
 
         pane.add(rightPanel, BorderLayout.LINE_END);
@@ -73,9 +74,11 @@ public class View implements Observer, ActionListener {
         rightPanel.add(btnEdit);
      //   menuBar.add(new JLabel("Next Alarm: " + ah.getAlarms().head().toString()));
 
+        // pane.add(button, BorderLayout.LINE_START);
         // End of borderlayout code
         frame.pack();
         frame.setVisible(true);
+
     }
 
     public void update(Observable o, Object arg) {
@@ -83,17 +86,35 @@ public class View implements Observer, ActionListener {
         if (ah.alarmTime()) {
             JOptionPane.showMessageDialog(panel, "Your alarm for " + ah.getNextAlarm() + " is going off");
             try {
+                ical.deleteEvent(ah.getNextAlarm());
                 ah.getAlarms().remove();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(panel, "Cannot delete the alarm");
             } catch (QueueUnderflowException ex) {
-
+                JOptionPane.showMessageDialog(panel, "No alarm to delete");
             }
         }
+        //This checks if the add has been clicked in order to display the next alarm time on screen It prevents updating every tingle second
+        if (runOnce == false) {
+            if (!ah.getAlarms().isEmpty()) {
+                nextAlarm = new JLabel("Next alarm: " + ah.getNextAlarm());
+                pane.remove(nextAlarm);
+                pane.add(nextAlarm, BorderLayout.PAGE_END);
+                frame.pack();
+                runOnce = true;
 
+            } else {
+                nextAlarm = new JLabel("No alarm has been set");
+                pane.remove(nextAlarm);
+                pane.add(nextAlarm, BorderLayout.PAGE_END);
+                frame.pack();
+                runOnce = true;
+            }
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (e.getSource() == addAlarm) {
             Date date = new Date();
             SpinnerDateModel sdm = new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY);
@@ -103,13 +124,41 @@ public class View implements Observer, ActionListener {
             int option = JOptionPane.showOptionDialog(pane, spinner, "Please select a time for the alarm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (option == JOptionPane.OK_OPTION) {
                 String alarmTime = dateEditor.getFormat().format(spinner.getValue());
+                ah.setAlarms(alarmTime);
+            }
+            runOnce = false;
 
-            } else if (e.getSource() == saveAlarm) {
+        } else if (e.getSource() == saveAlarm) {
+            try {
+                ah.saveAlarms();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(panel, "IO exception: could not write to file?");
+            } catch (ParseException ex) {
+                JOptionPane.showMessageDialog(panel, "Could not parse date");
+            }
+            JOptionPane.showMessageDialog(panel, "Your alarms have been saved to MyCalendar.ics");
 
-            } else if (e.getSource() == btnEdit) {
+        } else if (e.getSource() == btnEdit) {
+            if (!ah.getAlarms().isEmpty()) {
+                Object[] options = new Object[ah.getAlarms().toList().size()];
+                for (int i = 0; i < ah.getAlarms().toList().size(); i++) {
+                    options[i] = ah.getAlarms().toList().get(i);
+                }
 
-            } else if (e.getSource() == btnView) {
+                String s = (String) JOptionPane.showInputDialog(panel, "Select an alarm to Edit\n", "Edit Alarms", JOptionPane.PLAIN_MESSAGE, null, options, ah.getNextAlarm());
+            } else {
+                JOptionPane.showMessageDialog(panel, "There are no alarms to edit");
+            }
 
+        } else if (e.getSource() == btnView) {
+            String alarms = "";
+            if (!ah.getAlarms().isEmpty()) {
+                for (int i = 0; i < ah.getAlarms().toList().size(); i++) {
+                    alarms = alarms + "\n" + ah.getAlarms().toList().get(i);
+                }
+                JOptionPane.showMessageDialog(panel, alarms);
+            } else {
+                JOptionPane.showMessageDialog(panel, "There are no alarms to show");
             }
         }
     }
