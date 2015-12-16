@@ -13,6 +13,8 @@ import static org.junit.Assert.*;
  * @author Jamie Simpson
  */
 public class AlarmHandlerTest {
+    
+    AlarmHandler ah = new AlarmHandler();
 
     public AlarmHandlerTest() {
     }
@@ -23,7 +25,7 @@ public class AlarmHandlerTest {
     @Test
     public void testSetDate() {
         String time = "13:33";
-        AlarmHandler ah = new AlarmHandler();
+       
         System.out.println(ah.setDate(time));
     }
 
@@ -31,7 +33,8 @@ public class AlarmHandlerTest {
      * Test of getAlarms method, of class AlarmHandler.
      */
     @Test
-    public void testGetAlarms() throws Exception {
+    public void testSetAlarms() throws Exception {
+        System.out.println(ah.setAlarms("19:43"));
     }
 
     /**
