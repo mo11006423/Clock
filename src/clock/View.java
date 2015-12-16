@@ -30,7 +30,7 @@ public class View implements Observer, ActionListener {
     JOptionPane testPane = new JOptionPane();
     JFrame testFrame = new JFrame();
 
-    public View(Model model) throws IOException, QueueOverflowException, QueueUnderflowException {
+    public View(Model model) {
         JFrame frame = new JFrame();
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
@@ -77,7 +77,7 @@ public class View implements Observer, ActionListener {
         btnEdit.addActionListener(this);
         btnEdit.setMaximumSize(D);
         rightPanel.add(btnEdit);
-        menuBar.add(new JLabel("Next Alarm: " + ah.getAlarms().head().toString()));
+     //   menuBar.add(new JLabel("Next Alarm: " + ah.getAlarms().head().toString()));
 
         // End of borderlayout code
         frame.pack();
@@ -86,30 +86,7 @@ public class View implements Observer, ActionListener {
 
     public void update(Observable o, Object arg) {
         panel.repaint();
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        String currentTime = sdf.format(calendar.getTime());
-        try {
-            if (!ah.getAlarms().isEmpty()) {
-                try {
-                    if (currentTime.compareTo(ah.getAlarms().head().toString()) == 1 || currentTime.compareTo(ah.getAlarms().head().toString()) == 0) {
-                        System.out.println("The head:" + ah.getAlarms().head());
-                        JOptionPane.showMessageDialog(panel, "Your alarm is going off");
-                        ah.RemoveAlarm();
-                    }
-                } catch (IOException ex) {
 
-                } catch (QueueOverflowException ex) {
-                    JOptionPane.showMessageDialog(panel, "The queue was not dynamically expanded for some reason");
-                } catch (QueueUnderflowException ex) {
-                    JOptionPane.showMessageDialog(panel, "The queue had no values");
-                }
-            }
-        } catch (IOException ex) {
-            // JOptionPane.showMessageDialog(panel, "An expected IO exception occured when reading times");
-        } catch (QueueOverflowException ex) {
-            JOptionPane.showMessageDialog(panel, "The queue was not dynamically expanded for some reason");
-        }
     }
 
     @Override
@@ -124,53 +101,13 @@ public class View implements Observer, ActionListener {
             int option = JOptionPane.showOptionDialog(pane, spinner, "Please select a time for the alarm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (option == JOptionPane.OK_OPTION) {
                 String alarmTime = dateEditor.getFormat().format(spinner.getValue());
-                try {
-                    alarmHandler.saveAlarm(alarmTime);
-                } catch (IOException ex) {
-                    Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ParseException ex) {
-                    Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (QueueOverflowException ex) {
-                    Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-                }
 
-            } else {
+            } else if (e.getSource() == saveAlarm) {
 
-            }
-        } else if (e.getSource() == saveAlarm) {
-            try {
-                alarmHandler.getAlarms();
-            } catch (IOException ex) {
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (QueueOverflowException ex) {
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } else if (e.getSource() == btnEdit) {
 
-        } else if (e.getSource() == btnEdit) {
-            JTextField alarm;
+            } else if (e.getSource() == btnView) {
 
-            for (int i = 0; i < ah.getListAlarms().size(); i++) {
-                alarm = new JTextField();
-                alarm.setText(ah.getListAlarms().get(i));
-
-                testPane.add(alarm);
-            }
-            testFrame.add(testPane, BorderLayout.CENTER);
-            testFrame.setSize(300, 300);
-            testFrame.setVisible(true);
-            testFrame.setTitle("Edit Alarms");
-            testFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
-        } else if (e.getSource() == btnView) {
-            try {
-                JOptionPane.showMessageDialog(panel, ah.getStringAlarms(), "Below are a list of alarm times", JOptionPane.INFORMATION_MESSAGE);
-
-            } catch (IOException ex) {
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (QueueOverflowException ex) {
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (QueueUnderflowException ex) {
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

@@ -5,24 +5,8 @@
  */
 package clock;
 
-import biweekly.Biweekly;
-import biweekly.ICalVersion;
-import biweekly.ICalendar;
-import biweekly.component.VEvent;
-import biweekly.property.DateStart;
-import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import queuemanager.QueueOverflowException;
 import queuemanager.QueueUnderflowException;
 import queuemanager.SortedArrayPriorityQueue;
@@ -33,129 +17,24 @@ import queuemanager.SortedArrayPriorityQueue;
  */
 public class AlarmHandler {
 
-    private File file = new File("C:\\Users\\Jamie Simpson\\Desktop\\Alarms.ics");
-
-    public void saveAlarm(String alarmTime) throws IOException, ParseException, QueueOverflowException {
-
-        String hour = alarmTime.charAt(0) + "" + alarmTime.charAt(1);
-        String minutes = alarmTime.charAt(3) + "" + alarmTime.charAt(4);
-
-        if (!file.exists()) {
-            ICalendar ical = new ICalendar();
-
-            VEvent event = new VEvent();
-
-            ical.setVersion(ICalVersion.V2_0);
-            ical.setProductId("-//Jamie Simpson//Alarm Clock//EN");
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(minutes));
-            calendar.set(Calendar.SECOND, 00);
-            Date start = calendar.getTime();
-
-            event.setDateStart(new DateStart(start, true));
-            ical.addEvent(event);
-            Biweekly.write(ical).go(file);
-        } else {
-            VEvent event = new VEvent();
-            ICalendar ical = Biweekly.parse(file).first();
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(minutes));
-            calendar.set(Calendar.SECOND, 00);
-            Date start = calendar.getTime();
-            event.setDateStart(new DateStart(start, true));
-            ical.addEvent(event);
-            Biweekly.write(ical).go(file);
-        }
+    public void saveAlarm(String alarmTime)  {
 
     }
 
     public SortedArrayPriorityQueue getAlarms() throws IOException, QueueOverflowException {
-        ICalendar ical = Biweekly.parse(file).first();
-        SortedArrayPriorityQueue sorted = new SortedArrayPriorityQueue(ical.getEvents().size());
-        Date today = new Date();
-        Date date;
-        long currentTime = today.getTime();
-        Map<Long, String> currentAlarmMap = new TreeMap<>();
-        Map<Long, String> pastAlarmsMap = new TreeMap<>();
-        //Add the alarms to a linked list
-        for (int i = 0; i < ical.getEvents().size(); i++) {
-            date = ical.getEvents().get(i).getDateStart().getValue();
-            long key = date.getTime() - currentTime;
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            if (key < 0) {
-                pastAlarmsMap.put(key, sdf.format(cal.getTime()));
-            } else {
-                currentAlarmMap.put(key, sdf.format(cal.getTime()));
-            }
-        }
-        String[] currentAlarms;
-        currentAlarms = currentAlarmMap.values().toArray(new String[0]);
-        String[] pastAlarms;
-        pastAlarms = pastAlarmsMap.values().toArray(new String[0]);
-        int priority = ical.getEvents().size();
-
-        for (String currentAlarm : currentAlarms) {
-            sorted.add(currentAlarm, priority);
-            priority--;
-        }
-        for (String pastAlarm : pastAlarms) {
-            sorted.add(pastAlarm, priority);
-            priority--;
-        }
-
-        return sorted;
+        return null;
     }
 
     public void RemoveAlarm() throws IOException, QueueOverflowException, QueueUnderflowException {
-        ICalendar ical = Biweekly.parse(file).first();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        List<VEvent> events = new LinkedList<>();
-        for (VEvent event : ical.getEvents()) {
-            if (!sdf.format(event.getDateStart().getValue()).equals(getAlarms().head().toString())) {
-                events.add(event);
-            }
-        }
-        System.out.println(events.size());
-        ical.removeComponents(VEvent.class);
-        for (VEvent event : events) {
-            ical.addEvent(event);
-        }
-        Biweekly.write(ical).go(file);
-        getAlarms();
 
     }
 
     public String getStringAlarms() throws IOException, QueueOverflowException, QueueUnderflowException {
-        ICalendar ical = Biweekly.parse(file).first();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        List<String> times = new LinkedList<>();
-        String rtnVal = "";
-        for (VEvent event : ical.getEvents()) {
-            times.add(sdf.format(event.getDateStart().getValue()));
-        }
-        for (String time : times) {
-            rtnVal = rtnVal + "\n" + time;
-        }
-        return rtnVal;
+        return "";
     }
 
     public LinkedList<String> getListAlarms() {
-        ICalendar ical = null;
-        try {
-            ical = Biweekly.parse(file).first();
-        } catch (IOException ex) {
-            Logger.getLogger(AlarmHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        LinkedList<String> times = new LinkedList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        for (VEvent event : ical.getEvents()) {
-            times.add(sdf.format(event.getDateStart().getValue()));
-        }
-        return times;
+        return null;
     }
 
 }
