@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  * @author Jamie Simpson
  */
 public class AlarmHandlerTest {
-    
+
     AlarmHandler ah = new AlarmHandler();
 
     public AlarmHandlerTest() {
@@ -27,7 +27,7 @@ public class AlarmHandlerTest {
     @Test
     public void testSetDate() {
         String time = "13:33";
-       
+
         System.out.println(ah.setDate(time));
     }
 
@@ -37,9 +37,9 @@ public class AlarmHandlerTest {
     @Test
     public void testSetAlarms() throws Exception {
         System.out.println(ah.setAlarms("19:43"));
-        Ical ical = new Ical();
-       // ical.deleteEvent();
-        
+        //  System.out.println(ah.setAlarms("20:43"));
+          ah.saveAlarms();
+
     }
 
     /**

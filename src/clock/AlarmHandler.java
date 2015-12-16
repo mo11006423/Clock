@@ -25,6 +25,8 @@ import queuemanager.SortedArrayPriorityQueue;
  */
 public class AlarmHandler {
 
+    private SortedArrayPriorityQueue alarms;
+
     public Date setDate(String alarmTime) {
         String hour = alarmTime.charAt(0) + "" + alarmTime.charAt(1);
         String minutes = alarmTime.charAt(3) + "" + alarmTime.charAt(4);
@@ -49,6 +51,7 @@ public class AlarmHandler {
         Ical ical = new Ical();
         events = ical.getAllEventDates();
         events.add(date);
+
         Collections.sort(events);
         Date today = new Date();
 
@@ -62,7 +65,7 @@ public class AlarmHandler {
             }
         }
         //  System.out.println(currentEvents);
-        SortedArrayPriorityQueue alarms = new SortedArrayPriorityQueue(currentEvents.size());
+        alarms = new SortedArrayPriorityQueue(currentEvents.size());
         int priority = currentEvents.size();
         for (Date currentEvent : currentEvents) {
             try {
@@ -74,6 +77,14 @@ public class AlarmHandler {
         }
 
         return alarms;
+    }
+
+    public void saveAlarms() throws IOException, ParseException {
+        Ical ical = new Ical();
+        for (int i = 0; i < alarms.size(); i++) {
+            ical.addEvent((Date) alarms.toList().get(i));
+        }
+
     }
 
 }
