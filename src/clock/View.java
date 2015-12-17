@@ -4,13 +4,18 @@ import Jical.components.Ical;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import queuemanager.QueueUnderflowException;
 
 public class View implements Observer, ActionListener {
@@ -139,13 +144,49 @@ public class View implements Observer, ActionListener {
             JOptionPane.showMessageDialog(panel, "Your alarms have been saved to MyCalendar.ics");
 
         } else if (e.getSource() == btnEdit) {
-            if (!ah.getAlarms().isEmpty()) {
-                Object[] options = new Object[ah.getAlarms().toList().size()];
-                for (int i = 0; i < ah.getAlarms().toList().size(); i++) {
-                    options[i] = ah.getAlarms().toList().get(i);
-                }
+            //Show user a message telling them alarms have to be saved before being modified (reason being it 
+            //made coding much easier to edit from file than it did from this instance of the priority queue
+            int confirm = JOptionPane.showConfirmDialog(panel, "Warning!\n By poceeding your current alarms and settings\n will need be saved\n Press OK to continue or cancel to abort ", "", JOptionPane.OK_CANCEL_OPTION);
+            if (confirm == JOptionPane.OK_OPTION) {
+                if (!ah.getAlarms().isEmpty()) {
+                    Object[] options = new Object[ah.getAlarms().toList().size()];
+                    for (int i = 0; i < ah.getAlarms().toList().size(); i++) {
+                        options[i] = ah.getAlarms().toList().get(i);
+                    }
 
-                String s = (String) JOptionPane.showInputDialog(panel, "Select an alarm to Edit\n", "Edit Alarms", JOptionPane.PLAIN_MESSAGE, null, options, ah.getNextAlarm());
+                    Date date = (Date) JOptionPane.showInputDialog(panel, "Select an alarm to Edit\n", "Edit Alarms", JOptionPane.PLAIN_MESSAGE, null, options, ah.getNextAlarm());
+                    if (date != null) {
+                        SpinnerDateModel sdm = new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY);
+                        JSpinner spinner = new JSpinner(sdm);
+                        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, "HH:mm");
+                        spinner.setEditor(dateEditor);
+                        int option = JOptionPane.showOptionDialog(pane, spinner, "Please select a time for the alarm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                        if (option == JOptionPane.OK_OPTION) {
+                            try {
+                                ah.saveAlarms();
+                            } catch (IOException ex) {
+                                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (ParseException ex) {
+                                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            try {
+                                ical.deleteEvent(date);
+                            } catch (IOException ex) {
+                                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            String alarmTime = dateEditor.getFormat().format(spinner.getValue());
+
+                            try {
+                                ical.addEvent(ah.setDate(alarmTime));
+                            } catch (FileNotFoundException ex) {
+                                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            ah = new AlarmHandler();
+                            runOnce = false;
+
+                        }
+                    }
+                }
             } else {
                 JOptionPane.showMessageDialog(panel, "There are no alarms to edit");
             }
