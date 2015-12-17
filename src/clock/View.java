@@ -88,6 +88,7 @@ public class View implements Observer, ActionListener {
 
     public void update(Observable o, Object arg) {
         panel.repaint();
+        //checks to see if the alarm is due to go off based on head of the queue then deletes it from the queue and the ical file if stored
         if (ah.alarmTime()) {
             JOptionPane.showMessageDialog(panel, "Your alarm for " + ah.getNextAlarm() + " is going off");
             try {
@@ -109,6 +110,7 @@ public class View implements Observer, ActionListener {
                 runOnce = true;
 
             } else {
+                //code for the next alarm when not set
                 nextAlarm = new JLabel("No alarm has been set");
                 pane.remove(nextAlarm);
                 pane.add(nextAlarm, BorderLayout.PAGE_END);
@@ -122,6 +124,7 @@ public class View implements Observer, ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addAlarm) {
             Date date = new Date();
+            //Create spinner instance for easier user interaction
             SpinnerDateModel sdm = new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY);
             JSpinner spinner = new JSpinner(sdm);
             JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, "HH:mm");
@@ -147,13 +150,14 @@ public class View implements Observer, ActionListener {
             //Show user a message telling them alarms have to be saved before being modified (reason being it 
             //made coding much easier to edit from file than it did from this instance of the priority queue
             int confirm = JOptionPane.showConfirmDialog(panel, "Warning!\n By poceeding your current alarms and settings\n will need be saved\n Press OK to continue or cancel to abort ", "", JOptionPane.OK_CANCEL_OPTION);
+            //If user selects ok and alarms actually ecist populate the options and display them to the user
             if (confirm == JOptionPane.OK_OPTION) {
                 if (!ah.getAlarms().isEmpty()) {
                     Object[] options = new Object[ah.getAlarms().toList().size()];
                     for (int i = 0; i < ah.getAlarms().toList().size(); i++) {
                         options[i] = ah.getAlarms().toList().get(i);
                     }
-
+                    //set a date equal to the selected date (if its null nothing clicked)
                     Date date = (Date) JOptionPane.showInputDialog(panel, "Select an alarm to Edit\n", "Edit Alarms", JOptionPane.PLAIN_MESSAGE, null, options, ah.getNextAlarm());
                     if (date != null) {
                         SpinnerDateModel sdm = new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY);
@@ -161,19 +165,23 @@ public class View implements Observer, ActionListener {
                         JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, "HH:mm");
                         spinner.setEditor(dateEditor);
                         int option = JOptionPane.showOptionDialog(pane, spinner, "Please select a time for the alarm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                        //This should all not really go here in this file but time is ticking till deadlin, no pun intended
                         if (option == JOptionPane.OK_OPTION) {
                             try {
+                                //save the alamrs check for errors
                                 ah.saveAlarms();
                             } catch (IOException ex) {
                                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
                             } catch (ParseException ex) {
                                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
                             }
+                            //delete old event/alarm
                             try {
                                 ical.deleteEvent(date);
                             } catch (IOException ex) {
                                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
                             }
+                            //set new alarm time and below convert to date and add event
                             String alarmTime = dateEditor.getFormat().format(spinner.getValue());
 
                             try {
@@ -181,7 +189,9 @@ public class View implements Observer, ActionListener {
                             } catch (FileNotFoundException ex) {
                                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
                             }
+                            //this is needed so the new file is read in and not keeping the old ical file and pq values, basically it's a refresh
                             ah = new AlarmHandler();
+                            //set to false so next alarm updates, resizing may be required if previous labels not removed
                             runOnce = false;
 
                         }
@@ -192,6 +202,7 @@ public class View implements Observer, ActionListener {
             }
 
         } else if (e.getSource() == btnView) {
+            //Gets all the alarms as a string and displays them
             String alarms = "";
             if (!ah.getAlarms().isEmpty()) {
                 for (int i = 0; i < ah.getAlarms().toList().size(); i++) {

@@ -29,6 +29,7 @@ public class AlarmHandler {
     Ical ical = new Ical();
     private SortedArrayPriorityQueue alarms;
 
+    //The constructor reads alarms from the file so the user does not have to
     public AlarmHandler() {
         this.alarms = new SortedArrayPriorityQueue(1000);
         try {
@@ -45,6 +46,16 @@ public class AlarmHandler {
         }
     }
 
+    /**
+     * Takes a time in the format 12:34 and converts it to a date. Basically the
+     * characters at the 0, 1 indicies are the hour and the 3 and 4 are always
+     * te minutes an hour minute calander file can be created based on these
+     * values (converted to integers) and then a date created from this
+     * calender.
+     *
+     * @param alarmTime
+     * @return
+     */
     public Date setDate(String alarmTime) {
         String hour = alarmTime.charAt(0) + "" + alarmTime.charAt(1);
         String minutes = alarmTime.charAt(3) + "" + alarmTime.charAt(4);
@@ -60,6 +71,13 @@ public class AlarmHandler {
 
     }
 
+    /**
+     * This method takes the alarm time, converts it to the date format and also
+     * compares a list of all the stored alarms with the current date/time. This
+     * is so any expired alarms are removed and the queue never hits deadlock
+     *
+     * @param alarmTime
+     */
     public void setAlarms(String alarmTime) {
         Date date = setDate(alarmTime);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
@@ -67,15 +85,18 @@ public class AlarmHandler {
         LinkedList<Date> events = alarms.toList();
         LinkedList<Date> currentEvents = new LinkedList<>();
         events.add(date);
+        //Sorts the  dates in order
         Collections.sort(events);
         Date today = new Date();
         dateFormat.format(today);
+        //add only events that are after "the now"
         for (Date event : events) {
             //dateFormat.format(event);
             if (!event.before(today)) {
                 currentEvents.add(event);
             } else {
                 try {
+                    //delete any expired events
                     ical.deleteEvent(event);
                 } catch (IOException ex) {
                     System.out.println("The old event/alarm could not be deleted");
@@ -95,6 +116,15 @@ public class AlarmHandler {
         }
     }
 
+    /**
+     * saves the alarm to file. Firstly all dates are deleted from the file as
+     * some may have expired, this is done by a for loop and calling the ical
+     * deleteEvent method. the addEvent method is then called for every event in
+     * the current priority queue
+     *
+     * @throws IOException
+     * @throws ParseException
+     */
     public void saveAlarms() throws IOException, ParseException {
         for (int i = 0; i < ical.getCountEvents(); i++) {
             for (Date date : ical.getAllEventDates()) {
@@ -107,6 +137,11 @@ public class AlarmHandler {
 
     }
 
+    /**
+     * Returns the date value of the alarm stored in the priority queue
+     *
+     * @return
+     */
     public Date getNextAlarm() {
         try {
             return (Date) alarms.head();
@@ -116,10 +151,22 @@ public class AlarmHandler {
         return null;
     }
 
+    /**
+     * returns the alarms priority queue
+     *
+     * @return
+     */
     public SortedArrayPriorityQueue getAlarms() {
         return alarms;
     }
 
+    /**
+     * Compares the current date to the next alarm time, checking for an
+     * underflow and returns isTime (true) if the hour and minutes match. if it
+     * is false that means the alarm is still pending
+     *
+     * @return
+     */
     public boolean alarmTime() {
         Date today = new Date();
         Date nextAlarm = null;
@@ -138,6 +185,5 @@ public class AlarmHandler {
         }
         return isTime;
     }
-
 
 }
