@@ -9,6 +9,7 @@ import Jical.components.Ical;
 import java.util.Date;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import queuemanager.SortedArrayPriorityQueue;
 
 /**
  *
@@ -67,6 +68,60 @@ public class AlarmHandlerTest {
      */
     @Test
     public void testGetListAlarms() {
+    }
+
+    /**
+     * Test of saveAlarms method, of class AlarmHandler.
+     */
+    @Test
+    public void testSaveAlarms() throws Exception {
+        System.out.println("saveAlarms");
+        AlarmHandler instance = new AlarmHandler();
+        instance.saveAlarms();
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getNextAlarm method, of class AlarmHandler.
+     */
+    @Test
+    public void testGetNextAlarm() {
+        System.out.println("getNextAlarm");
+        AlarmHandler instance = new AlarmHandler();
+        Date expResult = null;
+        Date result = instance.getNextAlarm();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getAlarms method, of class AlarmHandler.
+     */
+    @Test
+    public void testGetAlarms() {
+        System.out.println("getAlarms");
+        AlarmHandler instance = new AlarmHandler();
+        SortedArrayPriorityQueue expResult = null;
+        SortedArrayPriorityQueue result = instance.getAlarms();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of alarmTime method, of class AlarmHandler.
+     */
+    @Test
+    public void testAlarmTime() {
+        System.out.println("alarmTime");
+        AlarmHandler instance = new AlarmHandler();
+        boolean expResult = false;
+        boolean result = instance.alarmTime();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
 }
